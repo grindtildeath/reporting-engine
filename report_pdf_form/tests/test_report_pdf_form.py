@@ -68,14 +68,14 @@ class TestReportPDFForm(common.TransactionCase):
                         {
                             "pdf_field_name": "form_line_1",
                             "odoo_field_evaluation": "code",
-                            "odoo_field_value": "object.child_ids[0].name if object.child_ids else ''",  # noqa
+                            "odoo_field_value": "record.child_ids[0].name if record.child_ids else ''",  # noqa
                         }
                     ),
                     Command.create(
                         {
                             "pdf_field_name": "form_line_2",
                             "odoo_field_evaluation": "code",
-                            "odoo_field_value": "object.child_ids[4].name if len(object.child_ids) > 4 else ''",  # noqa
+                            "odoo_field_value": "record.child_ids[4].name if len(record.child_ids) > 4 else ''",  # noqa
                         }
                     ),
                 ],
