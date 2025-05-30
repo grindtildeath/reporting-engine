@@ -14,7 +14,9 @@ class ReportPDFFormField(models.Model):
     odoo_field_evaluation = fields.Selection(
         [
             ("dotted_path", "Dotted field path"),
+            ("text", "Static text"),
             ("code", "Python code"),
+            ("repeat_field", "Repeat field"),
         ],
         required=True,
         default="dotted_path",

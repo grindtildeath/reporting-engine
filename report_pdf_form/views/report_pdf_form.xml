@@ -26,6 +26,16 @@
                                 </field>
                             </group>
                         </page>
+                        <page name="variables" string="Variables">
+                            <group>
+                                <field name="field_variable_ids">
+                                    <list editable="bottom">
+                                        <field name="name" />
+                                        <field name="code" />
+                                    </list>
+                                </field>
+                            </group>
+                        </page>
                         <page name="help" string="Help">
                             <p>There are two ways to fetch value from the object:</p>
                             <ul>

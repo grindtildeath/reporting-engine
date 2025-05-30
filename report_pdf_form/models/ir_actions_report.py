@@ -66,11 +66,22 @@ class IrActionsReport(models.Model):
         for form_field in template.field_mapping_ids:
             if form_field.odoo_field_evaluation == "dotted_path":
                 field_value = self._get_pdf_value_from_path(form_field, record)
+            elif form_field.odoo_field_evaluation == "text":
+                field_value = form_field.odoo_field_value
             elif form_field.odoo_field_evaluation == "code":
                 field_value = self._get_pdf_value_from_code(form_field, record)
+            elif form_field.odoo_field_evaluation == "repeat_field":
+                continue
             else:
                 raise UserError(self.env._("Invalid evaluation for Odoo field"))
             form_fields_values_mapping[prefix + form_field.pdf_field_name] = field_value
+
+        for form_field in template.field_mapping_ids.filtered(
+            lambda fld: fld.odoo_field_evaluation == "repeat_field"
+        ):
+            form_fields_values_mapping[prefix + form_field.pdf_field_name] = (
+                form_fields_values_mapping[prefix + form_field.odoo_field_value]
+            )
 
         decoded_template = base64.b64decode(template.pdf_attachment_id.datas)
         self._add_pages_to_writer_pdf(writer, decoded_template, prefix)
@@ -78,12 +89,13 @@ class IrActionsReport(models.Model):
     @api.model
     def _get_pdf_value_from_code(self, form_field, record):
         return safe_eval(
-            form_field.odoo_field_value, self._pdf_form_eval_context(record)
+            form_field.odoo_field_value,
+            self._pdf_form_eval_context(record, form_field.report_form_id),
         )
 
-    def _pdf_form_eval_context(self, record):
-        return {
-            "object": record.sudo(),
+    def _pdf_form_eval_context(self, record, template):
+        base_ctx = {
+            "record": record.sudo(),
             "env": record.env,
             "time": time,
             "datetime": datetime,
@@ -91,6 +103,10 @@ class IrActionsReport(models.Model):
             "timezone": timezone,
             "float_compare": float_compare,
         }
+        res = base_ctx.copy()
+        for var in template.field_variable_ids:
+            res[var.name] = safe_eval(var.code, base_ctx)
+        return res
 
     @api.model
     def _get_pdf_value_from_path(self, form_field, record):

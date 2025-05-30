@@ -32,3 +32,7 @@ class ReportPDFForm(models.Model):
         "report_form_id",
         required=True,
     )
+    field_variable_ids = fields.One2many(
+        "report.pdf.form.variable",
+        "report_form_id",
+    )
