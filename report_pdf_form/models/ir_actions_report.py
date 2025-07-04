@@ -34,7 +34,7 @@ class IrActionsReport(models.Model):
 
         res = {}
 
-        records = self.env[pdf_form_report.model_id.model].browse(res_ids)
+        records = self.env[pdf_form_report.sudo().model_id.model].browse(res_ids)
 
         for rec in records:
             res[rec.id] = {"stream": None, "attachment": None}
@@ -83,7 +83,7 @@ class IrActionsReport(models.Model):
                 form_fields_values_mapping[prefix + form_field.odoo_field_value]
             )
 
-        decoded_template = base64.b64decode(template.pdf_attachment_id.datas)
+        decoded_template = base64.b64decode(template.sudo().pdf_attachment_id.datas)
         self._add_pages_to_writer_pdf(writer, decoded_template, prefix)
 
     @api.model
